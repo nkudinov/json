@@ -15,7 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 public class JacksonGeneralAnnotations {
     ObjectMapper mapper;
@@ -103,6 +106,37 @@ public class JacksonGeneralAnnotations {
             this.name = name;
         }
     }
+
+    static class A6{
+        public int id;
+        public String a6name;
+
+        @JsonManagedReference
+        public A7 a7;
+
+        public void setA7(A7 a7) {
+            this.a7 = a7;
+        }
+
+        public A6(int id, String a6name, A7 a7) {
+            this.id = id;
+            this.a6name = a6name;
+            this.a7 = a7;
+        }
+    }
+    public class A7 {
+        public int id;
+        public String a7name;
+
+        @JsonBackReference
+        public List<A6> a6List;
+
+        public A7(int id, String a7name, List<A6> a6List) {
+            this.id = id;
+            this.a7name = a7name;
+            this.a6List = a6List;
+        }
+    }
     @Test
     void JsonPropertyTest() throws IOException {
         A1 a1 = new A1("John");
@@ -164,5 +198,15 @@ public class JacksonGeneralAnnotations {
         FilterProvider filter = new SimpleFilterProvider().addFilter("myFilter",  SimpleBeanPropertyFilter.filterOutAllExcept("age"));
         String json = mapper.writer(filter).writeValueAsString(a5);
         Assertions.assertFalse(json.contains("John"));
+    }
+    @Test
+    void JsonBackReferenceTest() throws JsonProcessingException {
+        A6 a6 = new A6(1,"John6",null);
+        A7 a7 = new A7(2,"John7", Arrays.asList(a6));
+        a6.setA7(a7);
+        String json = new ObjectMapper().writeValueAsString(a6);
+      //  System.out.println(json);
+        Assertions.assertTrue(json.contains("a6name"));
+        Assertions.assertTrue(json.contains("a7name"));
     }
 }
