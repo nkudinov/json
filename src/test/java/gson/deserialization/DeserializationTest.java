@@ -56,6 +56,5 @@ public class DeserializationTest {
     A a  = gson.fromJson(json,A.class);
     Assertions.assertEquals(a.getAge(),23);
     Assertions.assertEquals(a.getName(),"John");
-
  }
 }
