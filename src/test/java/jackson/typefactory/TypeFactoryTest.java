@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -28,7 +30,7 @@ class A {
         return name;
     }
 }
-
+//@RunWith(JUnitPlatform.class)
 public class TypeFactoryTest {
     ObjectMapper mapper;
     @BeforeEach
@@ -44,6 +46,7 @@ public class TypeFactoryTest {
         Assertions.assertEquals(a.getAge() ,23);
         Assertions.assertEquals(a.getName(),"John");
     }
+    @DisplayName("Test1")
     @Test
     void typeFactoryListTest() throws IOException {
         JavaType javaType = mapper.getTypeFactory().constructCollectionType(LinkedList.class,A.class);
