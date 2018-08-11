@@ -4,16 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Since;
+import com.google.gson.annotations.Until;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class AnnotationTest {
    static class A{
        @Expose(serialize = true)
-       public  String name;
+       private  String name;
 
        @Expose(serialize = false)
-       public final int age;
+       private final int age;
 
        public A(String name, int age) {
            this.name = name;
@@ -22,14 +24,26 @@ public class AnnotationTest {
    }
    static class A2 {
        @SerializedName("firstName")
-       public  String name;
+       private  String name;
 
        @SerializedName("ageInMonths")
-       public final int age;
+       private final int age;
 
        public A2(String name, int age) {
            this.name = name;
            this.age = age;
+       }
+   }
+   static class A3 {
+      @Since(1.2)
+      @Until(3.0)
+      private String firstName;
+      @Since(3.0)
+      private String lastName;
+
+       public A3(String firstName, String lastName) {
+           this.firstName = firstName;
+           this.lastName = lastName;
        }
    }
    @Test
@@ -47,6 +61,16 @@ public class AnnotationTest {
         Gson gson = new Gson();
         String json = gson.toJson(new A2("John",23));
         Assertions.assertTrue(json.contains("firstName"));
-        Assertions.assertFalse(json.contains("ageInMonths"));
+        Assertions.assertTrue(json.contains("ageInMonths"));
+    }
+    @Test
+    void versionTest(){
+      GsonBuilder builder = new GsonBuilder();
+      builder.setVersion(2.0);
+      Gson gson = builder.create();
+      A3 a3 = new A3("John","Smith");
+      String json = gson.toJson(a3);
+      Assertions.assertTrue(json.contains("firstName"));
+      Assertions.assertFalse(json.contains("lastName"));
     }
 }
